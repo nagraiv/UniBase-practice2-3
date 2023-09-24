@@ -17,17 +17,20 @@ class Search {
         document.body.insertAdjacentHTML('beforeend', '<table></table>');
         this.table = document.querySelector( 'table' );
         this.data = data;
+        this.displayedData = [...this.data];
 
         this.renderTable();
     }
 
     setData(data) {
         this.data = data;
+        this.displayedData = [...this.data];
         this.renderTable();
     }
 
     clearSearch = () => {
         this.searchForm.reset();
+        this.displayedData = [...this.data];
         this.renderData();
     }
 
@@ -35,8 +38,8 @@ class Search {
         event.preventDefault();
         const searchString = event.target[0].value.trim();
         const keys = Object.keys(this.data[0]);
-        const filteredData = this.data.filter(item => keys.some(key => item[key].toString().includes(searchString)));
-        this.renderData(filteredData);
+        this.displayedData = this.data.filter(item => keys.some(key => item[key].toString().includes(searchString)));
+        this.renderData();
     }
 
     sortColumn = (event) => {
@@ -46,10 +49,10 @@ class Search {
         titles.forEach(item => item.dataset.sorted = "unsorted");
         if (currentSorted === "sorted") {
             event.target.dataset.sorted = "reverse";
-            this.data.sort((a, b) => typeof a[key] == "number" ? b[key] - a[key] : (''+b[key]).localeCompare(a[key]));
+            this.displayedData.sort((a, b) => typeof a[key] == "number" ? b[key] - a[key] : (''+b[key]).localeCompare(a[key]));
         } else {
             event.target.dataset.sorted = "sorted";
-            this.data.sort((a, b) => typeof a[key] == "number" ? a[key] - b[key] : (''+a[key]).localeCompare(b[key]));
+            this.displayedData.sort((a, b) => typeof a[key] == "number" ? a[key] - b[key] : (''+a[key]).localeCompare(b[key]));
         }
         this.renderData();
     }
@@ -66,7 +69,7 @@ class Search {
         this.renderData();
     }
 
-    renderData(data = this.data) {
+    renderData(data = this.displayedData) {
         this.table.querySelector('tbody').innerHTML = '';
         if (data.length === 0) {
             return;
